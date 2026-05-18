@@ -1,5 +1,6 @@
 package br.com.codegroup.model;
 
+import br.com.codegroup.enums.ClassificacaoRisco;
 import br.com.codegroup.enums.StatusProjeto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,9 @@ public class Projeto implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private StatusProjeto status;
+
+    @Enumerated(EnumType.STRING)
+    private ClassificacaoRisco risco;
 
     @OneToMany(mappedBy = "projeto", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

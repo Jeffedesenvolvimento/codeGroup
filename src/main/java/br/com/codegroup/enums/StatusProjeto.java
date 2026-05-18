@@ -1,6 +1,7 @@
 package br.com.codegroup.enums;
 
 import java.util.List;
+import java.util.Map;
 
 public enum StatusProjeto {
     EM_ANALISE,
@@ -12,24 +13,20 @@ public enum StatusProjeto {
     ENCERRADO,
     CANCELADO;
 
-    private static final List<StatusProjeto> SEQUENCIA = List.of(
-            EM_ANALISE,
-            ANALISE_REALIZADA,
-            ANALISE_APROVADA,
-            INICIADO,
-            PLANEJADO,
-            EM_ANDAMENTO,
-            ENCERRADO
+    // Mapa de transições válidas
+    private static final Map<StatusProjeto, List<StatusProjeto>> TRANSICOES_VALIDAS = Map.of(
+            EM_ANALISE, List.of(ANALISE_REALIZADA),
+            ANALISE_REALIZADA, List.of(ANALISE_APROVADA),
+            ANALISE_APROVADA, List.of(INICIADO),
+            INICIADO, List.of(PLANEJADO),
+            PLANEJADO, List.of(EM_ANDAMENTO),
+            EM_ANDAMENTO, List.of(ENCERRADO, CANCELADO),
+            ENCERRADO, List.of(),
+            CANCELADO, List.of()
     );
 
     public boolean podeTransicionarPara(StatusProjeto proximo) {
-        if (proximo == CANCELADO) return true;
-
-        int atual = SEQUENCIA.indexOf(this);
-        int destino = SEQUENCIA.indexOf(proximo);
-
-        if (atual == -1 || destino == -1) return false;
-        return destino == atual + 1;
+        return TRANSICOES_VALIDAS.getOrDefault(this, List.of()).contains(proximo);
     }
 
     public boolean impedeDeletar() {

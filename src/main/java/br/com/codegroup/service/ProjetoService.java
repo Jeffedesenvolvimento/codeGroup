@@ -44,6 +44,7 @@ public class ProjetoService {
                 .descricao(request.descricao())
                 .gerenteMembroId(request.gerenteMembroId())
                 .status(request.status())
+                .risco(ClassificacaoRisco.calcular(request.orcamentoTotal(), request.dataInicio(), request.previsaoTermino()))
                 .build();
 
         projeto = projetoRepository.save(projeto);
@@ -86,11 +87,16 @@ public class ProjetoService {
         Projeto projeto = projetoRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Projeto com ID " + id + " não encontrado"));
 
-        if (request.status() != null && !projeto.getStatus().podeTransicionarPara(request.status())) {
+        if (request.status() != null
+                && request.status() != projeto.getStatus()
+                && !(request.status() == StatusProjeto.CANCELADO
+                || projeto.getStatus().podeTransicionarPara(request.status()))) {
             throw new BusinessException(
-                    "Transição de status inválida: " + projeto.getStatus() + " → " + request.status()
+                    "Transição de status inválida: "
+                            + projeto.getStatus() + " → " + request.status()
             );
         }
+
 
         validarGerente(request.gerenteMembroId());
 
@@ -102,6 +108,8 @@ public class ProjetoService {
         projeto.setDescricao(request.descricao());
         projeto.setGerenteMembroId(request.gerenteMembroId());
         projeto.setStatus(request.status());
+        projeto.setRisco(ClassificacaoRisco.calcular(request.orcamentoTotal(), request.dataInicio(), request.previsaoTermino()));
+
 
         projeto = projetoRepository.save(projeto);
 
@@ -163,12 +171,6 @@ public class ProjetoService {
                 })
                 .toList();
 
-        ClassificacaoRisco risco = ClassificacaoRisco.calcular(
-                projeto.getOrcamentoTotal(),
-                projeto.getDataInicio(),
-                projeto.getPrevisaoTermino()
-        );
-
         return new ProjetoResponse(
                 projeto.getId(),
                 projeto.getNome(),
@@ -179,7 +181,7 @@ public class ProjetoService {
                 projeto.getDescricao(),
                 gerente,
                 projeto.getStatus(),
-                risco,
+                projeto.getRisco(),
                 membros
         );
     }
