@@ -1,6 +1,5 @@
 package br.com.codegroup.controller;
 
-import br.com.codegroup.config.SecurityConfig;
 import br.com.codegroup.dto.response.LoginResponse;
 import br.com.codegroup.dto.resquest.LoginRequest;
 import br.com.codegroup.model.User;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
